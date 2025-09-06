@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from sqlalchemy import select
+from sqlalchemy import select, delete
 
 
 from app.db.models import Answer
@@ -20,3 +20,22 @@ def get_answer(session: SessionDep, id: int) -> AnswerOut:
     if not answer:
         raise HTTPException(status_code=404)
     return AnswerOut.model_validate(answer)
+
+@router.delete("/{id}")
+def delete_answer(session: SessionDep, id: int) -> str:
+    """
+    Delete answer by id.
+    """
+    stmt = delete(Answer).where(Answer.id == id).returning(Answer)
+    
+    
+    result = session.execute(stmt)
+    deleted_question = result.fetchone()
+
+    if not deleted_question:
+        raise HTTPException(status_code=404, detail="Answer was not found.")
+
+    session.commit()
+
+    return "Answer deleted succesfully."
+
