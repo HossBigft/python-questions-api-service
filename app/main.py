@@ -10,6 +10,7 @@ from app.core_utils.loggers import LoggingMiddleware
 from app.users import users_router as users
 from app.auth import auth_router as login
 from app.api import utils_router as utils
+from app.questions import questions_router as questions
 from app.core_utils.loggers import disable_default_uvicorn_access_logs
 
 
@@ -50,5 +51,6 @@ api_router = APIRouter(prefix=settings.API_V1_STR)
 api_router.include_router(users.router)
 api_router.include_router(utils.router)
 api_router.include_router(login.router)
+api_router.include_router(questions.router)
 
 app.include_router(api_router)

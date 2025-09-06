@@ -8,8 +8,8 @@ from app.schemas import (
     UserCreate,
     UserUpdate,
 )
-from app.db.models import User
-
+from app.db.models import User, Question, Answer
+from app.questions.questions_schemas import QuestionSchema
 
 def create_user(*, session: Session, user_create: UserCreate) -> User:
     db_obj = User(
@@ -51,3 +51,11 @@ def authenticate(*, session: Session, email: str, password: str) -> User | None:
     if not verify_password(password, db_user.hashed_password):
         return None
     return db_user
+
+
+def create_question(*, session: Session, question: QuestionSchema) -> Question:
+    db_obj = Question(text=question.text)
+    session.add(db_obj)
+    session.commit()
+    session.refresh(db_obj)
+    return db_obj
