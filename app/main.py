@@ -12,6 +12,8 @@ from app.auth import auth_router as login
 from app.api import utils_router as utils
 from app.questions import questions_router as questions
 from app.answers import answers_router as answers
+
+
 from app.core_utils.loggers import disable_default_uvicorn_access_logs
 
 
