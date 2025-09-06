@@ -22,7 +22,7 @@ def read_questions(session: SessionDep) -> Any:
     statement = select(Question)
     questions = session.execute(statement).scalars().all()
     if not questions:
-        raise  HTTPException(status_code=404)
+        raise HTTPException(status_code=404)
     return [QuestionOut.model_validate(question) for question in questions]
 
 
@@ -57,13 +57,21 @@ def delete_question(session: SessionDep, id: int) -> str:
 
     return "Question deleted succesfully"
 
+
 @router.post(
     "/{id}/answers",
 )
-def add_answer_to_question(session: SessionDep, answer: AnswerIn, id:int, current_user:CurrentUser) -> str:
+def add_answer_to_question(
+    session: SessionDep, answer: AnswerIn, id: int, current_user: CurrentUser
+) -> str:
     """
     Add question.
     """
-    add_answer(session=session, answer=answer, question_id=id, db_user=current_user)
+    question = session.get(Question, id)
+    if not question:
+        raise HTTPException(status_code=404, detail="Question does not exist.")
 
+    add_answer(
+        session=session, answer=answer, question_id=question.id, db_user=current_user
+    )
     return "Answer was added successfully"
