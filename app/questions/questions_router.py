@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import delete, select
 from typing import Any
 from sqlalchemy.orm import selectinload
@@ -12,18 +12,27 @@ from app.answers.answers_schemas import AnswerIn
 router = APIRouter(tags=["questions"], prefix="/questions")
 
 
-@router.get(
-    "/",
-)
-def get_questions_with_answers(session: SessionDep) -> Any:
+@router.get("/", response_model=list[QuestionOut])
+def get_questions_with_answers(
+    session: SessionDep,
+    skip: int = Query(0, ge=0, description="Number of items to skip"),
+    limit: int = Query(10, ge=1, le=1000, description="Number of questions to return"),
+) -> Any:
     """
-    Retrieve questions with list of answers.
+    Get questions with list of answers.
     """
 
-    stmt = select(Question).options(selectinload(Question.answers))
+    stmt = (
+        select(Question)
+        .options(selectinload(Question.answers))
+        .offset(skip)
+        .limit(limit)
+    )
+
     questions = session.execute(stmt).scalars().all()
     if not questions:
-        raise HTTPException(status_code=404, detail="Question not found")
+        raise HTTPException(status_code=404, detail="Question not found.")
+
     return [QuestionOut.model_validate(question) for question in questions]
 
 
