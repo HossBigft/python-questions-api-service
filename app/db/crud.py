@@ -9,7 +9,7 @@ from app.schemas import (
     UserUpdate,
 )
 from app.db.models import User, Question, Answer
-from app.questions.questions_schemas import QuestionSchema
+from app.questions.questions_schemas import QuestionIn
 
 def create_user(*, session: Session, user_create: UserCreate) -> User:
     db_obj = User(
@@ -53,7 +53,7 @@ def authenticate(*, session: Session, email: str, password: str) -> User | None:
     return db_user
 
 
-def create_question(*, session: Session, question: QuestionSchema) -> Question:
+def create_question(*, session: Session, question: QuestionIn) -> Question:
     db_obj = Question(text=question.text)
     session.add(db_obj)
     session.commit()

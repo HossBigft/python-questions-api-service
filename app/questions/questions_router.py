@@ -1,18 +1,14 @@
-
 from fastapi import APIRouter, HTTPException
-from sqlalchemy import update, delete, select, func
+from sqlalchemy import delete, select
 from typing import Any
 
 from app.db.models import Question
-from app.core.dependencies import (
-    SessionDep
-)
-from app.questions.questions_schemas import QuestionSchema
+from app.core.dependencies import SessionDep
+from app.questions.questions_schemas import QuestionOut, QuestionIn
 from app.db.crud import create_question
 
 
 router = APIRouter(tags=["questions"], prefix="/questions")
-
 
 
 @router.get(
@@ -25,27 +21,38 @@ def read_questions(session: SessionDep) -> Any:
 
     statement = select(Question)
     questions = session.execute(statement).scalars().all()
+    if not questions:
+        raise  HTTPException(status_code=404)
+    return [QuestionOut.model_validate(question) for question in questions]
 
-    return [QuestionSchema.model_validate(question) for question in questions]
 
 @router.post(
     "/",
 )
-def add_question(session: SessionDep, question:QuestionSchema) -> None:
+def add_question(session: SessionDep, question: QuestionIn) -> str:
     """
     Add question.
     """
     create_question(session=session, question=question)
 
-@router.get(
+    return "Question was added successfully"
+
+
+@router.delete(
     "/{id}",
 )
-def read_questions(session: SessionDep, id:int) -> Any:
+def delete_question(session: SessionDep, id: int) -> str:
     """
-    Retrieve questions.
+    Delete question by id.
     """
+    stmt = delete(Question).where(Question.id == id).returning(Question)
 
-    statement = select(Question)
-    questions = session.execute(statement).scalars().all()
+    result = session.execute(stmt)
+    deleted_question = result.fetchone()
 
-    return [QuestionSchema.model_validate(question) for question in questions]
+    if not deleted_question:
+        raise HTTPException(status_code=404, detail="Question was not found.")
+
+    session.commit()
+
+    return "Question deleted succesfully"
