@@ -15,6 +15,7 @@ router = APIRouter(tags=["questions"], prefix="/questions")
 @router.get("/", response_model=list[QuestionOut])
 def get_questions_with_answers(
     session: SessionDep,
+    current_user: CurrentUser,
     skip: int = Query(0, ge=0, description="Number of items to skip"),
     limit: int = Query(10, ge=1, le=1000, description="Number of questions to return"),
 ) -> Any:
