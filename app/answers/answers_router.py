@@ -3,14 +3,18 @@ from sqlalchemy import select, delete
 
 
 from app.db.models import Answer
-from app.core.dependencies import SessionDep
+from app.core.dependencies import SessionDep, CurrentUser
 from app.answers.answers_schemas import AnswerOut
 
 router = APIRouter(tags=["answers"], prefix="/answers")
 
 
 @router.get("/{id}")
-def get_answer(session: SessionDep, id: int) -> AnswerOut:
+def get_answer(
+    session: SessionDep,
+    id: int,
+    current_user: CurrentUser,
+) -> AnswerOut:
     """
     Retrieve answer.
     """
@@ -21,14 +25,18 @@ def get_answer(session: SessionDep, id: int) -> AnswerOut:
         raise HTTPException(status_code=404)
     return AnswerOut.model_validate(answer)
 
+
 @router.delete("/{id}")
-def delete_answer(session: SessionDep, id: int) -> str:
+def delete_answer(
+    session: SessionDep,
+    id: int,
+    current_user: CurrentUser,
+) -> str:
     """
     Delete answer by id.
     """
     stmt = delete(Answer).where(Answer.id == id).returning(Answer)
-    
-    
+
     result = session.execute(stmt)
     deleted_question = result.fetchone()
 
@@ -38,4 +46,3 @@ def delete_answer(session: SessionDep, id: int) -> str:
     session.commit()
 
     return "Answer deleted succesfully."
-

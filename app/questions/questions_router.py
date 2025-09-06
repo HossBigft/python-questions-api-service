@@ -22,7 +22,6 @@ def get_questions_with_answers(
     """
     Get questions with list of answers.
     """
-
     stmt = (
         select(Question)
         .options(selectinload(Question.answers))
@@ -40,7 +39,11 @@ def get_questions_with_answers(
 @router.post(
     "/",
 )
-def add_question(session: SessionDep, question: QuestionIn) -> str:
+def add_question(
+    session: SessionDep,
+    question: QuestionIn,
+    current_user: CurrentUser,
+) -> str:
     """
     Add question.
     """
@@ -52,7 +55,11 @@ def add_question(session: SessionDep, question: QuestionIn) -> str:
 @router.delete(
     "/{id}",
 )
-def delete_question(session: SessionDep, id: int) -> str:
+def delete_question(
+    session: SessionDep,
+    id: int,
+    current_user: CurrentUser,
+) -> str:
     """
     Delete question by id.
     """
