@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from sqlalchemy import delete, select
 from typing import Any
+from sqlalchemy.orm import selectinload
 
 from app.db.models import Question
 from app.core.dependencies import SessionDep, CurrentUser
@@ -14,15 +15,15 @@ router = APIRouter(tags=["questions"], prefix="/questions")
 @router.get(
     "/",
 )
-def read_questions(session: SessionDep) -> Any:
+def get_questions_with_answers(session: SessionDep) -> Any:
     """
-    Retrieve questions.
+    Retrieve questions with list of answers.
     """
 
-    statement = select(Question)
-    questions = session.execute(statement).scalars().all()
+    stmt = select(Question).options(selectinload(Question.answers))
+    questions = session.execute(stmt).scalars().all()
     if not questions:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Question not found")
     return [QuestionOut.model_validate(question) for question in questions]
 
 

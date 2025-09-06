@@ -1,7 +1,7 @@
 import uuid
 
 from sqlalchemy import String, UUID, Boolean, DateTime, func, ForeignKey, Text, Integer
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from datetime import datetime
 
 
@@ -35,7 +35,11 @@ class Question(Base):
         DateTime(timezone=True), server_default=func.now()
     )
 
-
+    answers: Mapped[list["Answer"]] = relationship(
+        "Answer", back_populates="question", cascade="all, delete-orphan"
+    )
+    
+    
 class Answer(Base):
     __tablename__ = "answer"
 
@@ -50,3 +54,5 @@ class Answer(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
+    
+    question: Mapped["Question"] = relationship("Question", back_populates="answers")
