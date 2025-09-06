@@ -1,5 +1,3 @@
-import sentry_sdk
-
 from fastapi import FastAPI, APIRouter
 from fastapi.routing import APIRoute
 from starlette.middleware.cors import CORSMiddleware
@@ -9,7 +7,6 @@ from app.core.config import settings
 from app.core_utils.loggers import LoggingMiddleware
 from app.users import users_router as users
 from app.auth import auth_router as login
-from app.api import utils_router as utils
 from app.questions import questions_router as questions
 from app.answers import answers_router as answers
 
@@ -19,10 +16,6 @@ from app.core_utils.loggers import disable_default_uvicorn_access_logs
 
 def custom_generate_unique_id(route: APIRoute) -> str:
     return f"{route.tags[0]}-{route.name}"
-
-
-if settings.SENTRY_DSN and settings.ENVIRONMENT != "local":
-    sentry_sdk.init(dsn=str(settings.SENTRY_DSN), enable_tracing=True)
 
 
 @asynccontextmanager
@@ -52,8 +45,15 @@ app.add_middleware(LoggingMiddleware)
 api_router = APIRouter(prefix=settings.API_V1_STR)
 
 api_router.include_router(users.router)
-api_router.include_router(utils.router)
 api_router.include_router(login.router)
 api_router.include_router(questions.router)
 api_router.include_router(router=answers.router)
 app.include_router(api_router)
+
+
+router = APIRouter(tags=["health-check"])
+
+@router.get("/health-check/")
+async def health_check() -> bool:
+    return True
+app.include_router(router)
