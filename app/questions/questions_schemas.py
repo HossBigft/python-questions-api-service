@@ -9,5 +9,5 @@ class QuestionSchema(BaseModel):
     }
 
 
-class Answer(BaseModel):
+class AnswerSchema(BaseModel):
     text: str = Field(max_length=10000, description="Answer to the question")

@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import String, UUID, Boolean, DateTime, func, ForeignKey, Text
+from sqlalchemy import String, UUID, Boolean, DateTime, func, ForeignKey, Text, Integer
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from datetime import datetime
 
@@ -29,9 +29,7 @@ class User(Base):
 class Question(Base):
     __tablename__ = "question"
 
-    id: Mapped[UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[Integer] = mapped_column(Integer, primary_key=True)
     text: Mapped[str] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
@@ -41,11 +39,9 @@ class Question(Base):
 class Answer(Base):
     __tablename__ = "answer"
 
-    id: Mapped[UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
-    question_id: Mapped[UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("question.id", ondelete="CASCADE")
+    id: Mapped[Integer] = mapped_column(Integer, primary_key=True)
+    question_id: Mapped[Integer] = mapped_column(
+        Integer, ForeignKey("question.id", ondelete="CASCADE")
     )
     user_id: Mapped[UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("user.id", ondelete="CASCADE")

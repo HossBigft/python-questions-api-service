@@ -36,4 +36,16 @@ def add_question(session: SessionDep, question:QuestionSchema) -> None:
     Add question.
     """
     create_question(session=session, question=question)
-    
+
+@router.get(
+    "/{id}",
+)
+def read_questions(session: SessionDep, id:int) -> Any:
+    """
+    Retrieve questions.
+    """
+
+    statement = select(Question)
+    questions = session.execute(statement).scalars().all()
+
+    return [QuestionSchema.model_validate(question) for question in questions]
