@@ -63,7 +63,9 @@ def create_question(*, session: Session, question: QuestionIn) -> Question:
     return db_obj
 
 
-def add_answer(*, session: Session, question_id: Integer, answer: AnswerIn, db_user: User) -> Answer:
+def add_answer(
+    *, session: Session, question_id: Integer, answer: AnswerIn, db_user: User
+) -> Answer:
     db_obj = Answer(text=answer.text, question_id=question_id, user_id=db_user.id)
     session.add(db_obj)
     session.commit()

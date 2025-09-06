@@ -68,7 +68,7 @@ class Settings(BaseSettings):
             path=self.POSTGRES_DB,
         )
 
-    # TODO: update type to EmailStr when sqlmodel supports it
+
     FIRST_SUPERUSER: str
     FIRST_SUPERUSER_PASSWORD: str
 
