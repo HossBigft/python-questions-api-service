@@ -12,6 +12,7 @@ from app.db.models import User, Question, Answer
 from app.questions.questions_schemas import QuestionIn
 from app.answers.answers_schemas import AnswerIn
 
+
 def create_user(*, session: Session, user_create: UserCreate) -> User:
     db_obj = User(
         email=user_create.email,
@@ -62,8 +63,8 @@ def create_question(*, session: Session, question: QuestionIn) -> Question:
     return db_obj
 
 
-def add_answer(*, session: Session, answer: AnswerIn) -> Answer:
-    db_obj = Answer(text=answer.text)
+def add_answer(*, session: Session, question_id: int, answer: AnswerIn, db_user: User) -> Answer:
+    db_obj = Answer(text=answer.text, question_id=question_id, user_id=db_user.id)
     session.add(db_obj)
     session.commit()
     session.refresh(db_obj)

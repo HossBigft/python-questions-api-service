@@ -3,9 +3,9 @@ from sqlalchemy import delete, select
 from typing import Any
 
 from app.db.models import Question
-from app.core.dependencies import SessionDep
+from app.core.dependencies import SessionDep, CurrentUser
 from app.questions.questions_schemas import QuestionOut, QuestionIn
-from app.db.crud import create_question
+from app.db.crud import create_question, add_answer
 from app.answers.answers_schemas import AnswerIn
 
 router = APIRouter(tags=["questions"], prefix="/questions")
@@ -60,10 +60,10 @@ def delete_question(session: SessionDep, id: int) -> str:
 @router.post(
     "/{id}/answers",
 )
-def add_answer(session: SessionDep, answer: AnswerIn) -> str:
+def add_answer_to_question(session: SessionDep, answer: AnswerIn, id:int, current_user:CurrentUser) -> str:
     """
     Add question.
     """
-    create_question(session=session, question=question)
+    add_answer(session=session, answer=answer, question_id=id, db_user=current_user)
 
-    return "Question was added successfully"
+    return "Answer was added successfully"
