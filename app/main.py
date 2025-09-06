@@ -11,6 +11,7 @@ from app.users import users_router as users
 from app.auth import auth_router as login
 from app.api import utils_router as utils
 from app.questions import questions_router as questions
+from app.answers import answers_router as answers
 from app.core_utils.loggers import disable_default_uvicorn_access_logs
 
 
@@ -52,5 +53,5 @@ api_router.include_router(users.router)
 api_router.include_router(utils.router)
 api_router.include_router(login.router)
 api_router.include_router(questions.router)
-
+api_router.include_router(router=answers.router)
 app.include_router(api_router)

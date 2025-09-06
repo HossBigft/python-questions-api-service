@@ -6,7 +6,7 @@ from app.db.models import Question
 from app.core.dependencies import SessionDep
 from app.questions.questions_schemas import QuestionOut, QuestionIn
 from app.db.crud import create_question
-
+from app.answers.answers_schemas import AnswerIn
 
 router = APIRouter(tags=["questions"], prefix="/questions")
 
@@ -56,3 +56,14 @@ def delete_question(session: SessionDep, id: int) -> str:
     session.commit()
 
     return "Question deleted succesfully"
+
+@router.post(
+    "/{id}/answers",
+)
+def add_answer(session: SessionDep, answer: AnswerIn) -> str:
+    """
+    Add question.
+    """
+    create_question(session=session, question=question)
+
+    return "Question was added successfully"
