@@ -4,14 +4,10 @@ from starlette.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from app.core.config import settings
-from app.core_utils.loggers import LoggingMiddleware
 from app.users import users_router as users
 from app.auth import auth_router as login
 from app.questions import questions_router as questions
 from app.answers import answers_router as answers
-
-
-from app.core_utils.loggers import disable_default_uvicorn_access_logs
 
 
 def custom_generate_unique_id(route: APIRoute) -> str:
@@ -20,7 +16,6 @@ def custom_generate_unique_id(route: APIRoute) -> str:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    disable_default_uvicorn_access_logs()
     yield
 
 
@@ -41,7 +36,6 @@ if settings.all_cors_origins:
         allow_headers=["*"],
     )
 
-app.add_middleware(LoggingMiddleware)
 api_router = APIRouter(prefix=settings.API_V1_STR)
 
 api_router.include_router(users.router)
@@ -53,7 +47,10 @@ app.include_router(api_router)
 
 router = APIRouter(tags=["health-check"])
 
+
 @router.get("/health-check/")
 async def health_check() -> bool:
     return True
+
+
 app.include_router(router)
