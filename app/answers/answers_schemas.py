@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 class AnswerIn(BaseModel):
-    text: str = Field(max_length=10000, description="Answer to the question")
+    text: str = Field(min_length=1,max_length=10000, description="Answer to the question")
 
 
 class AnswerOut(BaseModel):

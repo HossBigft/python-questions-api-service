@@ -14,4 +14,4 @@ class QuestionOut(BaseModel):
 
 
 class QuestionIn(BaseModel):
-    text: str = Field(max_length=255, description="Question text")
+    text: str = Field(min_length=3, max_length=255, description="Question text")
